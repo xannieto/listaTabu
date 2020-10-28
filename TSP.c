@@ -3,6 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define PARADA 1E5
+
+void _calcular_custe(grafo *G, tipovertice *S, double distancia_S) {
+    
+}
+
 void cargar_grafo(grafo *G, char *nome_ficheiro) {
     FILE *ficheiro;
     int N;
