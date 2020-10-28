@@ -2,9 +2,6 @@
 
 #define __GRAFO_LIB
 
-#define MAXVERTICES 100 /*maximo numero de nodos*/
-#define MAX_CARACTERES 50
-
 /*
  * Implementación estática del TAD grafo con una matrIz
  * de adjacencias con máximo número de vértices MAXVERTICES 
@@ -16,7 +13,8 @@
 
 //Información que se almacena en cada vértice
 typedef struct{
-    char usuario[MAX_CARACTERES];
+    double latitude;
+    double lonxitude;
 }tipovertice;
 
 ////////////////////////////////////// FIN PARTE MODIFICABLE
@@ -26,8 +24,8 @@ typedef struct tipografo * grafo;
 //////////////////////////////////////////////////////////////// FUNCIONES
 
 
-//Creación del grafo con 0 nodos
-void crear_grafo(grafo *G);
+//Creación del grafo con N nodos
+void crear_grafo(grafo *G, int N);
 
 //Devuelve la posición del vértice Vert en el vector VERTICES del grafo G
 //Si devuelve -1 es porque no encontró el vértice
@@ -64,5 +62,8 @@ int num_vertices(grafo G);
 
 //Devuelve el vector de vértices VERTICES del grafo G
 tipovertice* array_vertices(grafo G);
+
+// calcula a distancia entre dous vértices
+double calcular_distancia(grafo *G, int pos1, int pos2);
 
 #endif	/* __GRAFO_LIB */

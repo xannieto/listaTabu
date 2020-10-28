@@ -52,4 +52,5 @@ Mkfile.old
 dkms.conf
 
 #Customized
-analizador.out
+tps.out
+*.txt
