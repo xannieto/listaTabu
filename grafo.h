@@ -63,6 +63,9 @@ int num_vertices(grafo G);
 //Devuelve el vector de vértices VERTICES del grafo G
 tipovertice* array_vertices(grafo G);
 
+// Devolver o vector de vértices sen o primeiro elemento
+tipovertice* array_vertices_bis(grafo G);
+
 // calcula a distancia entre dous vértices
 double calcular_distancia(grafo *G, int pos1, int pos2);
 

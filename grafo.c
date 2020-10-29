@@ -39,6 +39,7 @@ int _comparar_vertices(tipovertice V1, tipovertice V2){
 void crear_grafo(grafo *G, int N) {
     *G = (struct tipografo*) malloc(sizeof (struct tipografo));
     (*G)->MAXVERTICES = N;
+    (*G)->N = 0;
     (*G)->VERTICES = malloc(sizeof(tipovertice) * N);
     (*G)->A = (int *) malloc(sizeof(int) * N * N);
     (*G)->distancias = (double *) malloc(sizeof(double) * N * N);  
@@ -148,6 +149,18 @@ int num_vertices(grafo G) {
 //Devuelve el vector de vértices VERTICES del grafo G
 tipovertice* array_vertices(grafo G) {
     return G->VERTICES;
+}
+
+tipovertice* array_vertices_bis(grafo G) {
+    tipovertice *vertices = NULL;
+
+    vertices = (tipovertice *) malloc(sizeof(tipovertice) * (G->MAXVERTICES - 1) );
+    
+    for (int i = 0; i < (G->MAXVERTICES -1); i++) {
+        vertices[i] = G->VERTICES[i + 1];
+    } 
+
+    return vertices;
 }
 
 double calcular_distancia(grafo *G, int pos1, int pos2) {
