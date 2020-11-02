@@ -13,6 +13,7 @@
 
 //Información que se almacena en cada vértice
 typedef struct{
+    int id;
     double latitude;
     double lonxitude;
 }tipovertice;

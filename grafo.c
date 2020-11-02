@@ -26,7 +26,7 @@ struct tipografo {
  * -1 si V1 está antes de V2 o 1 en otro caso.
  */
 int _comparar_vertices(tipovertice V1, tipovertice V2){
-    if (V1.latitude == V2.latitude && V1.lonxitude == V2.lonxitude) {
+    if (V1.id == V2.id) {
         return 0;
     }
 
@@ -37,12 +37,12 @@ int _comparar_vertices(tipovertice V1, tipovertice V2){
 
 //Creación del grafo con 0 nodos
 void crear_grafo(grafo *G, int N) {
-    *G = (struct tipografo*) malloc(sizeof (struct tipografo));
-    (*G)->MAXVERTICES = N;
+    *G = malloc(sizeof(struct tipografo));
     (*G)->N = 0;
+    (*G)->MAXVERTICES = N;
     (*G)->VERTICES = malloc(sizeof(tipovertice) * N);
-    (*G)->A = (int *) malloc(sizeof(int) * N * N);
-    (*G)->distancias = (double *) malloc(sizeof(double) * N * N);  
+    (*G)->A = malloc(sizeof(int) * N * N);
+    (*G)->distancias = malloc(sizeof(double) * N * N);  
 
     for (int i = 0; i < (*G)->MAXVERTICES; i++) {
         for (int j = 0; j < (*G)->MAXVERTICES; j++) {
@@ -78,14 +78,13 @@ int existe_vertice(grafo G, tipovertice V) {
 
 //Inserta un vértice en el grafo
 int insertar_vertice(grafo *G, tipovertice Vert) {
-    int i;
     if ((*G)->N == (*G)->MAXVERTICES) {
     	// Se ha llegado al maximo numero de vertices
     	printf("Grafo lleno!\n");
     	return -1;
     }
-   
-    (*G)->N++;
+
+    Vert.id = (*G)->N++;
     (*G)->VERTICES[((*G)->N) - 1] = Vert;
 	
     return (*G)->N-1;
