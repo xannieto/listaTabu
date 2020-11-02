@@ -7,7 +7,7 @@
 #include <time.h>
 #include <limits.h>
 
-#define PARADA 1E5
+#define PARADA 1E4
 #define TAM_ALEATORIOS 99
 
 int ITERACION = 0;
@@ -86,6 +86,7 @@ int _posicion_actual(tipovertice *S_n, int id) {
             return pos;
         }
     }
+    printf("Id: %d\n", id);
     return -1;
 }
 
@@ -119,14 +120,69 @@ double _calcular_custe_n(grafo *G, tipovertice *S_n, int i, int j) {
     return distancia;
 }
 
+double _calcular_custe_actual(grafo *G, tipovertice *S_n, int i, int j, double distancia_actual) {
+    double tmp_actual = 0.0;
+    double tmp_novo = 0.0;
+    int pos_i = _posicion_actual(S_n, i);
+    int pos_j = _posicion_actual(S_n, j);
+
+    /* distancia de i, j a i - 1 e a i + 1 */
+    if (pos_i == 0) {
+        tmp_actual += calcular_distancia(G, ORIXE.id, i);
+        tmp_actual += calcular_distancia(G, i,  S_n[pos_i + 1].id);
+
+        tmp_novo += calcular_distancia(G, ORIXE.id, j);
+        tmp_novo += calcular_distancia(G, j,  S_n[pos_i + 1].id);
+    
+    } else if (pos_i == (TAMANHO_S - 1)) {
+        tmp_actual += calcular_distancia(G, S_n[pos_i - 1].id, i);
+        tmp_actual += calcular_distancia(G, i, ORIXE.id);
+
+        tmp_novo += calcular_distancia(G, S_n[pos_i - 1].id, j);
+        tmp_novo += calcular_distancia(G, j, ORIXE.id);
+    
+    } else {
+        tmp_actual += calcular_distancia(G, S_n[pos_i - 1].id, i);
+        tmp_actual += calcular_distancia(G, i, S_n[pos_i + 1].id);
+
+        tmp_novo += calcular_distancia(G, S_n[pos_i - 1].id, j);
+        tmp_novo += calcular_distancia(G, j, S_n[pos_i + 1].id);
+    }
+
+    /* distancia de i, j a j - 1 e a j + 1 */
+    if (pos_j == 0) {
+        tmp_actual += calcular_distancia(G, ORIXE.id, j);
+        tmp_actual += calcular_distancia(G, j,  S_n[pos_j + 1].id);
+
+        tmp_novo += calcular_distancia(G, ORIXE.id, i);
+        tmp_novo += calcular_distancia(G, i,  S_n[pos_j + 1].id);
+    
+    } else if (pos_j == (TAMANHO_S - 1)) {
+        tmp_actual += calcular_distancia(G, S_n[pos_j - 1].id, j);
+        tmp_actual += calcular_distancia(G, j, ORIXE.id);
+
+        tmp_novo += calcular_distancia(G, S_n[pos_j - 1].id, i);
+        tmp_novo += calcular_distancia(G, i, ORIXE.id);
+    
+    } else {
+        tmp_actual += calcular_distancia(G, S_n[pos_j - 1].id, i);
+        tmp_actual += calcular_distancia(G, i, S_n[pos_j + 1].id);
+
+        tmp_novo += calcular_distancia(G, S_n[pos_j - 1].id, j);
+        tmp_novo += calcular_distancia(G, j, S_n[pos_j + 1].id);
+    }
+
+    return(distancia_actual - tmp_actual + tmp_novo);
+}
+
 MOVEMENTO *_producir_movementos(tipovertice *S_n) {
     MOVEMENTO *movementos;
     MOVEMENTO tmp;
     int i, j, k;
     movementos = (MOVEMENTO *) malloc(sizeof(MOVEMENTO) * TAMANHO_M);
 
-    for (i = 0, k = 0; i < (TAMANHO_S - 2); i++) {
-        for (j = (i + 1); j < (TAMANHO_S - 1); j++, k++) {
+    for (i = 0, k = 0; i < (TAMANHO_S - 1); i++) {
+        for (j = (i + 1); j < TAMANHO_S; j++, k++) {
             tmp.i = S_n[i].id;
             tmp.j = S_n[j].id;
             movementos[k] = tmp;
@@ -163,7 +219,7 @@ void cargar_grafo(grafo *G, char *nome_ficheiro) {
 void _imprimir_info(tipovertice *S_n, LISTATABU lista_tabu, MOVEMENTO intercambio, double custe, int iteracions_sen_mellora) {
     int i;
 
-    printf("ITERACIÓN: %d\n", ITERACION + 1);
+    printf("\nITERACIÓN: %d\n", ITERACION + 1);
     printf("\tINTERCAMBIO: (%d, %d)\n", intercambio.i, intercambio.j);
     printf("\tPERCORRIDO: ");
     for (i = 0; i < (TAMANHO_S - 1); i++) {
@@ -201,8 +257,8 @@ void lista_tabu_basica(grafo *G, char *numeros_aleatorios) {
     _producir_solucion_aleatoria(numeros_aleatorios, L, S_opt);
 
     printf("PERCORRIDO INICIAL\n");
-    printf("\tPERCORRIDO:");
-    for (k = 0; k < (TAMANHO_S - 1); k++) {
+    printf("\tPERCORRIDO: ");
+    for (k = 0; k < TAMANHO_S; k++) {
         printf("%d ", S_opt[k].id);
     }
     printf("\n");
@@ -240,7 +296,8 @@ void lista_tabu_basica(grafo *G, char *numeros_aleatorios) {
             }
 
             custe_vecinho = _calcular_custe_n(G, S_n, movementos[k].i, movementos[k].j);
-            
+            //custe_vecinho = _calcular_custe_actual(G, S_n, movementos[k].i, movementos[k].j, custe_n);
+
             if ( custe_vecinho < custe_mellor_vecinho ) {
                 custe_mellor_vecinho = custe_vecinho;
                 mellor_vecinho = movementos[k];
@@ -265,6 +322,16 @@ void lista_tabu_basica(grafo *G, char *numeros_aleatorios) {
         /* liberación do punteiro */
         free(movementos);
     }
+
+    /* mellor solución */
+    printf("\nMELLOR SOLUCIÓN\n");
+    printf("\tPERCORRIDO: ");
+    for (k = 0; k < (TAMANHO_S - 1); k++) {
+        printf("%d ", S_opt[k].id);
+    }
+    printf("\n");
+    printf("\tCUSTE (km): %d\n", (int) custe_opt);
+
 
     free(L);
     free(S_n);
