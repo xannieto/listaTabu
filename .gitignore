@@ -54,3 +54,4 @@ dkms.conf
 #Customized
 tps.out
 *.txt
+.vscode/*
