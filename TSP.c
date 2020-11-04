@@ -38,7 +38,7 @@ void _producir_solucion_aleatoria(char *numeros_aleatorios, tipovertice *L, tipo
                 v = (v + 1) % TAM_ALEATORIOS; 
             } 
             
-            S_opt[i] = L[v];
+            S_opt[i] = L[v - 1];
             v_producidos[v] = 1;
         } 
     /* producindo solución aleatoria con ficheiro */
@@ -50,10 +50,10 @@ void _producir_solucion_aleatoria(char *numeros_aleatorios, tipovertice *L, tipo
         for (i = 0; i < TAM_ALEATORIOS; i++) {
             fscanf(ficheiro, "%lf", &r);
             
-            v = (int) 1 + (r * 99);
+            v = (int) (r * 99);
             
             /* comprobamos que non foi usado */
-            while ( v_producidos[v] != 0 ) {
+            while ( v_producidos[v] == 1 ) {
                 v = (v + 1) % TAM_ALEATORIOS; 
             } 
             
@@ -67,15 +67,16 @@ void _producir_solucion_aleatoria(char *numeros_aleatorios, tipovertice *L, tipo
     }
 }
 
-double _calcular_custe(grafo *G, tipovertice *S_n) {
-    double distancia = 0.0;
+int _calcular_custe(grafo *G, tipovertice *S_n) {
+    int distancia = 0.0;
 
     distancia += calcular_distancia(G, ORIXE.id, S_n[0].id);
-    distancia += calcular_distancia(G, S_n[TAMANHO_S - 1].id, ORIXE.id);
 
-    for (int i = 0; i < (TAMANHO_S - 2); i++) {
+    for (int i = 0; i < (TAMANHO_S - 1); i++) {
         distancia += calcular_distancia(G, S_n[i].id, S_n[i + 1].id);
     }
+
+    distancia += calcular_distancia(G, S_n[TAMANHO_S - 1].id, ORIXE.id);
 
     return distancia;
 }
@@ -85,26 +86,22 @@ int _posicion_actual(tipovertice *S_n, int id) {
         if (S_n[pos].id == id) {
             return pos;
         }
-    }
-    printf("Id: %d\n", id);
+    }   
     return -1;
 }
 
 void _realizar_movemento(tipovertice *S_n, MOVEMENTO movemento) {
-    int pos_i = _posicion_actual(S_n, movemento.i);
-    int pos_j = _posicion_actual(S_n, movemento.j);
-
-    tipovertice tmp = S_n[pos_i];
-    S_n[pos_i] = S_n[pos_j];
-    S_n[pos_j] = tmp;
+    tipovertice tmp = S_n[movemento.i];
+    S_n[movemento.i] = S_n[movemento.j];
+    S_n[movemento.j] = tmp;
 }
 
-double _calcular_custe_n(grafo *G, tipovertice *S_n, int i, int j) {
-    double distancia = 0.0;
+int _calcular_custe_n(grafo *G, tipovertice *S_n, int i, int j) {
+    int distancia = 0;
     tipovertice *S_copia = malloc(sizeof(tipovertice) * TAMANHO_S);
     MOVEMENTO movemento;
 
-    S_copia = memcpy(S_copia, S_n, sizeof(tipovertice) * TAMANHO_S);
+    memcpy(S_copia, S_n, sizeof(tipovertice) * TAMANHO_S);
     movemento.i = i;
     movemento.j = j;
     _realizar_movemento(S_copia, movemento);
@@ -112,67 +109,12 @@ double _calcular_custe_n(grafo *G, tipovertice *S_n, int i, int j) {
     distancia += calcular_distancia(G, ORIXE.id, S_copia[0].id);
     distancia += calcular_distancia(G, S_copia[TAMANHO_S - 1].id, ORIXE.id);
 
-    for (int i = 0; i < (TAMANHO_S - 2); i++) {
+    for (int i = 0; i < (TAMANHO_S - 1); i++) {
         distancia += calcular_distancia(G, S_copia[i].id, S_copia[i + 1].id);
     }
 
     free(S_copia);
     return distancia;
-}
-
-double _calcular_custe_actual(grafo *G, tipovertice *S_n, int i, int j, double distancia_actual) {
-    double tmp_actual = 0.0;
-    double tmp_novo = 0.0;
-    int pos_i = _posicion_actual(S_n, i);
-    int pos_j = _posicion_actual(S_n, j);
-
-    /* distancia de i, j a i - 1 e a i + 1 */
-    if (pos_i == 0) {
-        tmp_actual += calcular_distancia(G, ORIXE.id, i);
-        tmp_actual += calcular_distancia(G, i,  S_n[pos_i + 1].id);
-
-        tmp_novo += calcular_distancia(G, ORIXE.id, j);
-        tmp_novo += calcular_distancia(G, j,  S_n[pos_i + 1].id);
-    
-    } else if (pos_i == (TAMANHO_S - 1)) {
-        tmp_actual += calcular_distancia(G, S_n[pos_i - 1].id, i);
-        tmp_actual += calcular_distancia(G, i, ORIXE.id);
-
-        tmp_novo += calcular_distancia(G, S_n[pos_i - 1].id, j);
-        tmp_novo += calcular_distancia(G, j, ORIXE.id);
-    
-    } else {
-        tmp_actual += calcular_distancia(G, S_n[pos_i - 1].id, i);
-        tmp_actual += calcular_distancia(G, i, S_n[pos_i + 1].id);
-
-        tmp_novo += calcular_distancia(G, S_n[pos_i - 1].id, j);
-        tmp_novo += calcular_distancia(G, j, S_n[pos_i + 1].id);
-    }
-
-    /* distancia de i, j a j - 1 e a j + 1 */
-    if (pos_j == 0) {
-        tmp_actual += calcular_distancia(G, ORIXE.id, j);
-        tmp_actual += calcular_distancia(G, j,  S_n[pos_j + 1].id);
-
-        tmp_novo += calcular_distancia(G, ORIXE.id, i);
-        tmp_novo += calcular_distancia(G, i,  S_n[pos_j + 1].id);
-    
-    } else if (pos_j == (TAMANHO_S - 1)) {
-        tmp_actual += calcular_distancia(G, S_n[pos_j - 1].id, j);
-        tmp_actual += calcular_distancia(G, j, ORIXE.id);
-
-        tmp_novo += calcular_distancia(G, S_n[pos_j - 1].id, i);
-        tmp_novo += calcular_distancia(G, i, ORIXE.id);
-    
-    } else {
-        tmp_actual += calcular_distancia(G, S_n[pos_j - 1].id, i);
-        tmp_actual += calcular_distancia(G, i, S_n[pos_j + 1].id);
-
-        tmp_novo += calcular_distancia(G, S_n[pos_j - 1].id, j);
-        tmp_novo += calcular_distancia(G, j, S_n[pos_j + 1].id);
-    }
-
-    return(distancia_actual - tmp_actual + tmp_novo);
 }
 
 MOVEMENTO *_producir_movementos(tipovertice *S_n) {
@@ -183,8 +125,8 @@ MOVEMENTO *_producir_movementos(tipovertice *S_n) {
 
     for (i = 0, k = 0; i < (TAMANHO_S - 1); i++) {
         for (j = (i + 1); j < TAMANHO_S; j++, k++) {
-            tmp.i = S_n[i].id;
-            tmp.j = S_n[j].id;
+            tmp.i = j;
+            tmp.j = i;
             movementos[k] = tmp;
         }
     }
@@ -200,7 +142,6 @@ void cargar_grafo(grafo *G, char *nome_ficheiro) {
 
     if ((ficheiro = fopen(nome_ficheiro, "r")) != NULL) {
         fscanf(ficheiro, "%d", &N);
-
         if (N > 0) {
             crear_grafo(G, N);
             for ( int i = 0; i < N; i++) {
@@ -216,18 +157,18 @@ void cargar_grafo(grafo *G, char *nome_ficheiro) {
     }
 }
 
-void _imprimir_info(tipovertice *S_n, LISTATABU lista_tabu, MOVEMENTO intercambio, double custe, int iteracions_sen_mellora) {
+void _imprimir_info(tipovertice *S_n, LISTATABU lista_tabu, MOVEMENTO intercambio, int custe, int iteracions_sen_mellora) {
     int i;
 
-    printf("\nITERACIÓN: %d\n", ITERACION + 1);
+    printf("\nITERACION: %d\n", ITERACION + 1);
     printf("\tINTERCAMBIO: (%d, %d)\n", intercambio.i, intercambio.j);
-    printf("\tPERCORRIDO: ");
-    for (i = 0; i < (TAMANHO_S - 1); i++) {
+    printf("\tRECORRIDO: ");
+    for (i = 0; i < TAMANHO_S; i++) {
         printf("%d ", S_n[i].id);
     }
     printf("\n");
-    printf("\tCUSTE (km): %d\n", (int) custe);
-    printf("\tITERACIÓNS SEN MELLORA: %d\n", iteracions_sen_mellora);
+    printf("\tCOSTE (km): %d\n", custe);
+    printf("\tITERACIONES SIN MEJORA: %d\n", iteracions_sen_mellora);
     imprimir_lista_tabu(lista_tabu);
 
 }
@@ -238,10 +179,10 @@ void lista_tabu_basica(grafo *G, char *numeros_aleatorios) {
     LISTATABU lista_tabu;
     MOVEMENTO *movementos;
     MOVEMENTO mellor_vecinho;
-    int k = 0, iteracions_sen_mellora = 0, reinicios = 0;
-    double custe_opt = 0.0;
-    double custe_n = 0.0;
-    double custe_mellor_vecinho = 0.0, custe_vecinho = 0.0;
+    int k = 0, iteracions_sen_mellora = 0, reinicios = 0, menor_indice, mellor_iteracion = 0;
+    int custe_opt = 0;
+    int custe_n = 0;
+    int custe_mellor_vecinho = 0, custe_vecinho = 0;
     
     /* iniciamos as reservas de memoria e outras cousas*/
     ORIXE = array_vertices(*G)[0];
@@ -256,21 +197,20 @@ void lista_tabu_basica(grafo *G, char *numeros_aleatorios) {
     /* hai que xerar a solucion inicial */
     _producir_solucion_aleatoria(numeros_aleatorios, L, S_opt);
 
-    printf("PERCORRIDO INICIAL\n");
-    printf("\tPERCORRIDO: ");
+    printf("RECORRIDO INICIAL\n");
+    printf("\tRECORRIDO: ");
     for (k = 0; k < TAMANHO_S; k++) {
         printf("%d ", S_opt[k].id);
     }
     printf("\n");
 
     custe_opt = _calcular_custe(G, S_opt);
-    printf("\tCUSTE (km): %d\n", (int) custe_opt);
+    printf("\tCOSTE (km): %d\n", (int) custe_opt);
 
     /* gardamos a informacion en S_n para traballar con ela */
     custe_n = custe_opt;
     S_n = memcpy(S_n, S_opt, sizeof(tipovertice) * TAMANHO_S);
 
-    /* BUCLE GRANDE */
     for (ITERACION = 0; ITERACION < PARADA; ITERACION++) {
 
         if (iteracions_sen_mellora == 100) {
@@ -281,56 +221,65 @@ void lista_tabu_basica(grafo *G, char *numeros_aleatorios) {
 
             inicializar_lista_tabu(&lista_tabu);
 
-            printf("***************\n");
+            printf("\n***************\n");
             printf("REINICIO: %d\n", ++reinicios);
             printf("***************\n");
         }
 
         movementos = _producir_movementos(S_n);
         custe_mellor_vecinho = INT_MAX;
+        menor_indice = INT_MAX;
         /* busca do mellor veciño */
-        for ( k = 0; k < TAMANHO_M; k++) {
+        for (k = 0; k < TAMANHO_M; k++) {
 
-            if (e_movemento_tabu(&lista_tabu, movementos[k].i, movementos[k].j)) {
+            if (e_movemento_tabu(lista_tabu, movementos[k].i, movementos[k].j)) {
                 continue;
             }
-
+            
             custe_vecinho = _calcular_custe_n(G, S_n, movementos[k].i, movementos[k].j);
-            //custe_vecinho = _calcular_custe_actual(G, S_n, movementos[k].i, movementos[k].j, custe_n);
-
-            if ( custe_vecinho < custe_mellor_vecinho ) {
+            
+            if (custe_vecinho < custe_mellor_vecinho) {
                 custe_mellor_vecinho = custe_vecinho;
                 mellor_vecinho = movementos[k];
+                menor_indice = movementos[k].i;
+
+            } else if (custe_vecinho == custe_mellor_vecinho && movementos[k].i < menor_indice) {
+                custe_mellor_vecinho = custe_vecinho;
+                mellor_vecinho = movementos[k];
+                menor_indice = movementos[k].i;
             }
+
         }
-  
+
         _realizar_movemento(S_n, mellor_vecinho);
         custe_n = custe_mellor_vecinho;
         inserir_movemento(&lista_tabu, mellor_vecinho.i, mellor_vecinho.j);
+        menor_indice = TAMANHO_S;
 
         if (custe_n < custe_opt) {
             custe_opt = custe_n;
-            S_n = memcpy(S_n, S_opt, sizeof(tipovertice) * TAMANHO_S);
+            memcpy(S_opt, S_n, sizeof(tipovertice) * TAMANHO_S);
             iteracions_sen_mellora = 0;
+            mellor_iteracion = ITERACION + 1;
         
         } else {
             iteracions_sen_mellora++;
         }
 
         _imprimir_info(S_n, lista_tabu, mellor_vecinho, custe_n, iteracions_sen_mellora);
-
         /* liberación do punteiro */
         free(movementos);
     }
 
     /* mellor solución */
-    printf("\nMELLOR SOLUCIÓN\n");
-    printf("\tPERCORRIDO: ");
-    for (k = 0; k < (TAMANHO_S - 1); k++) {
+    printf("\n\nMEJOR SOLUCION:\n");
+    printf("\tRECORRIDO: ");
+    for (k = 0; k < TAMANHO_S; k++) {
         printf("%d ", S_opt[k].id);
     }
     printf("\n");
-    printf("\tCUSTE (km): %d\n", (int) custe_opt);
+    printf("\tCOSTE (km): %d\n", custe_opt);
+    printf("\tITERACION: %d\n", mellor_iteracion);
 
 
     free(L);

@@ -17,7 +17,7 @@ void inicializar_lista_tabu(LISTATABU *lista_tabu);
 
 void inserir_movemento(LISTATABU *lista_tabu, int i, int j);
 
-int e_movemento_tabu(LISTATABU *lista_tabu, int i, int j);
+int e_movemento_tabu(LISTATABU lista_tabu, int i, int j);
 
 void imprimir_lista_tabu(LISTATABU lista_tabu);
 

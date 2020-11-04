@@ -11,16 +11,15 @@ int main(int argc, char *argv[]) {
     /* só está o ficheiro cos concellos */
     if (argc > 1) {
         strcpy(nome_ficheiro, argv[1]);
-        printf("INFO: Ficheiro recibido: %s.\n", nome_ficheiro);
 
         cargar_grafo(&G, nome_ficheiro); 
         
         /* ficheiro dos concellos e tamén de números aleatorios */
         if (argc == 3) {
             strcpy(nome_ficheiro, argv[2]);
-            printf("INFO: Ficheiro de números aleatorios recibido: %s.\n", nome_ficheiro);
             
             lista_tabu_basica(&G, nome_ficheiro);
+            borrar_grafo(&G);
 
         } else {
             lista_tabu_basica(&G, NULL);

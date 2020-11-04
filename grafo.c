@@ -13,7 +13,7 @@ struct tipografo {
     int MAXVERTICES;
     tipovertice *VERTICES; //vector de vértices
     int *A; //matriz de adyacencia
-    double *distancias;
+    int *distancias;
 };
 
 //////////////////////////////////////////////////////////////// FUNCIONES
@@ -42,7 +42,7 @@ void crear_grafo(grafo *G, int N) {
     (*G)->MAXVERTICES = N;
     (*G)->VERTICES = malloc(sizeof(tipovertice) * N);
     (*G)->A = malloc(sizeof(int) * N * N);
-    (*G)->distancias = malloc(sizeof(double) * N * N);  
+    (*G)->distancias = malloc(sizeof(int) * N * N);  
 
     for (int i = 0; i < (*G)->MAXVERTICES; i++) {
         for (int j = 0; j < (*G)->MAXVERTICES; j++) {
@@ -162,7 +162,8 @@ tipovertice* array_vertices_bis(grafo G) {
     return vertices;
 }
 
-double calcular_distancia(grafo *G, int pos1, int pos2) {
+int calcular_distancia(grafo *G, int pos1, int pos2) {
+    int final;
 
     if ((*G)->distancias[pos1 * (*G)->MAXVERTICES + pos2] > 0) {
         return (*G)->distancias[pos1 * (*G)->MAXVERTICES + pos2];
@@ -187,9 +188,13 @@ double calcular_distancia(grafo *G, int pos1, int pos2) {
     distancia = sqrt(distancia);
     distancia = 2 * RADIO_TERRA * distancia;
 
-    /* gardamos a distancia calculada */
-    (*G)->distancias[pos1 * (*G)->MAXVERTICES + pos2] = distancia;
-    (*G)->distancias[pos2 * (*G)->MAXVERTICES + pos1] = distancia;
+    /* redondeo para arriba */
+    final = (int) distancia;
+    final++;
 
-    return distancia;
+    /* gardamos a distancia calculada */
+    (*G)->distancias[pos1 * (*G)->MAXVERTICES + pos2] = final;
+    (*G)->distancias[pos2 * (*G)->MAXVERTICES + pos1] = final;
+
+    return final;
 }

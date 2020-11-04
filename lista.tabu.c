@@ -9,6 +9,7 @@ void inicializar_lista_tabu(LISTATABU *lista_tabu) {
     for (int i = 0; i < TAMANHO_LISTA_TABU; i++ ) {
         (*lista_tabu).movementos[i] = movemento;
     }
+    
     (*lista_tabu).pos_actual = 0;
 }
 
@@ -22,10 +23,9 @@ void inserir_movemento(LISTATABU *lista_tabu, int i, int j) {
     (*lista_tabu).pos_actual = ((*lista_tabu).pos_actual + 1) % TAMANHO_LISTA_TABU; 
 }
 
-int e_movemento_tabu(LISTATABU *lista_tabu, int i, int j) {
-    if (lista_tabu == NULL) return -1;
+int e_movemento_tabu(LISTATABU lista_tabu, int i, int j) {
     for (int k = 0; k < TAMANHO_LISTA_TABU; k++) {
-        if ((lista_tabu->movementos[k].i == i && lista_tabu->movementos[k].j == j) || (lista_tabu->movementos[k].i == j && lista_tabu->movementos[k].j == i)) {
+        if ((lista_tabu.movementos[k].i == i && lista_tabu.movementos[k].j == j) || (lista_tabu.movementos[k].i == j && lista_tabu.movementos[k].j == i)) {
             return 1;
         }    
     }
@@ -34,7 +34,7 @@ int e_movemento_tabu(LISTATABU *lista_tabu, int i, int j) {
 } 
 
 void imprimir_lista_tabu(LISTATABU lista_tabu) {
-    printf("\tLISTA TABÚ:\n");
+    printf("\tLISTA TABU:\n");
 
     for (int i = 0; i < TAMANHO_LISTA_TABU; i++) {
         if ( lista_tabu.movementos[i].i == -1 ) {

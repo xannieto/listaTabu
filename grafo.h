@@ -68,6 +68,6 @@ tipovertice* array_vertices(grafo G);
 tipovertice* array_vertices_bis(grafo G);
 
 // calcula a distancia entre dous vértices
-double calcular_distancia(grafo *G, int pos1, int pos2);
+int calcular_distancia(grafo *G, int pos1, int pos2);
 
 #endif	/* __GRAFO_LIB */
