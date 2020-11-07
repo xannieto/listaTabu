@@ -80,8 +80,8 @@ int existe_vertice(grafo G, tipovertice V) {
 int insertar_vertice(grafo *G, tipovertice Vert) {
     if ((*G)->N == (*G)->MAXVERTICES) {
     	// Se ha llegado al maximo numero de vertices
-    	printf("Grafo lleno!\n");
-    	return -1;
+        printf("Grafo lleno!\n");
+        return -1;
     }
 
     Vert.id = (*G)->N++;
@@ -95,8 +95,8 @@ void borrar_vertice(grafo *G, tipovertice Vert) {
     int F, C, P, N = (*G)->N;
     P = posicion(*G, Vert);
     if(P == -1){
-    	printf("Vertice inexistente!\n");
-    	return;
+        printf("Vertice inexistente!\n");
+        return;
     }
     //if (P >= 0 && P < (*G)->N) {
     for (F = P; F < N - 1; F++){
@@ -160,6 +160,15 @@ tipovertice* array_vertices_bis(grafo G) {
     } 
 
     return vertices;
+}
+
+void incrementar_frecuencia(grafo *G, int pos1, int pos2) {
+    (*G)->A[pos1 * (*G)->MAXVERTICES + pos2] = (*G)->A[pos1 * (*G)->MAXVERTICES + pos2] + 1;
+    (*G)->A[pos2 * (*G)->MAXVERTICES + pos1] = (*G)->A[pos1 * (*G)->MAXVERTICES + pos2];
+}
+
+int obter_frecuencia(grafo *G, int pos1, int pos2) {
+    return (*G)->A[pos1 * (*G)->MAXVERTICES + pos2];
 }
 
 int calcular_distancia(grafo *G, int pos1, int pos2) {

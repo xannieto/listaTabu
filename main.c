@@ -18,7 +18,8 @@ int main(int argc, char *argv[]) {
         if (argc == 3) {
             strcpy(nome_ficheiro, argv[2]);
             
-            lista_tabu_basica(&G, nome_ficheiro);
+            //lista_tabu_basica(&G, nome_ficheiro);
+            lista_tabu_avanzada(&G, nome_ficheiro);
             borrar_grafo(&G);
 
         } else {

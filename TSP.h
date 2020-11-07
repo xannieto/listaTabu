@@ -4,8 +4,6 @@
 
 void cargar_grafo(grafo *G, char *nome_ficheiro);
 
-void lista_tabu_basica(grafo *G, char *numeros_aleatorios);
-
-void lista_tabu_mellorada(grafo *G, char *numeros_aleatorios);
+void lista_tabu_avanzada(grafo *G, char *numeros_aleatorios);
 
 #endif /* __TSP__ */

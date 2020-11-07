@@ -70,4 +70,8 @@ tipovertice* array_vertices_bis(grafo G);
 // calcula a distancia entre dous vértices
 int calcular_distancia(grafo *G, int pos1, int pos2);
 
+void incrementar_frecuencia(grafo *G, int pos1, int pos2);
+
+int obter_frecuencia(grafo *G, int pos1, int pos2);
+
 #endif	/* __GRAFO_LIB */
